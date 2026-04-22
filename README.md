@@ -42,10 +42,10 @@ streamlit run app.py
 
 ## Screenshots
 > Dashboard showing top job titles, locations and salary distribution
-![alt text](image.png)
+![Dashboard](dashboard.png)
 
 > Resume Analyzer giving AI feedback on uploaded PDF resume
-![alt text](image-1.png)
+![Resume Analyser](resume.png)
 
 ## Author
 **Dhiraj Pawar**
