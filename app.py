@@ -11,8 +11,12 @@ st.set_page_config(page_title="Job Market Dashboard", layout="wide")
 
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/lukebarousse/Data_Analyst_Job_Postings_Google_Search/main/data/gsearch_jobs.csv"
-    df = pd.read_csv(url)
+    url = "https://raw.githubusercontent.com/dhirajpawar-dev/job-market-dashboard/main/gsearch_jobs.csv"
+    try:
+        df = pd.read_csv("gsearch_jobs_small.csv")
+    except:
+        st.error("Could not load data. Please check the data source.")
+        st.stop()
     return df
 
 df = load_data()
