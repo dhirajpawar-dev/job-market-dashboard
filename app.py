@@ -11,7 +11,6 @@ st.set_page_config(page_title="Job Market Dashboard", layout="wide")
 
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/dhirajpawar-dev/job-market-dashboard/main/gsearch_jobs.csv"
     try:
         df = pd.read_csv("gsearch_jobs_small.csv")
     except:
@@ -72,10 +71,56 @@ else:
 
 st.divider()
 
+# Skills Trend
+st.subheader("Top Skills in Demand")
+skills_data = []
+skill_list = ['python', 'sql', 'tableau', 'excel', 'power_bi', 'r', 'spark', 'aws']
+
+for skill in skill_list:
+    count = df['description_tokens'].dropna().apply(
+        lambda x: skill in str(x).lower()
+    ).sum()
+    skills_data.append({"Skill": skill.upper(), "Job Postings": int(count)})
+
+skills_df = pd.DataFrame(skills_data).sort_values("Job Postings", ascending=True)
+fig4 = px.bar(skills_df, x="Job Postings", y="Skill", orientation="h",
+              color="Job Postings", color_continuous_scale="teal",
+              title="Most In-Demand Skills Across All Job Postings")
+st.plotly_chart(fig4, use_container_width=True)
+
+st.divider()
+
+# Job Match Score
+st.subheader("Job Match Score")
+st.markdown("Enter your skills and see how well you match the job market.")
+user_skills = st.text_input("Enter your skills (comma separated):",
+    placeholder="e.g. python, sql, tableau, excel")
+
+if user_skills:
+    user_skill_list = [s.strip().lower() for s in user_skills.split(",")]
+    market_skills = ['python', 'sql', 'tableau', 'excel', 'power_bi', 'r', 'spark', 'aws']
+    matched = [s for s in user_skill_list if s in market_skills]
+    score = int((len(matched) / len(market_skills)) * 100)
+
+    st.metric("Your Match Score", f"{score}%")
+
+    if score >= 70:
+        st.success(f"Great match! You have: {', '.join(matched)}")
+    elif score >= 40:
+        st.warning(f"Good start! You have: {', '.join(matched)}")
+    else:
+        st.error(f"Keep learning! You matched: {', '.join(matched) if matched else 'none yet'}")
+
+    missing = [s for s in market_skills if s not in user_skill_list]
+    if missing:
+        st.info(f"Skills to learn next: {', '.join(missing[:3]).upper()}")
+
+st.divider()
+
 st.subheader("Ask AI About the Job Market")
 st.markdown("Ask anything about Data Analyst jobs, skills, salaries, or trends.")
 
-user_question = st.text_input("Your question:", 
+user_question = st.text_input("Your question:",
     placeholder="e.g. What skills should I learn for a data analyst job in 2026?")
 
 if user_question:
