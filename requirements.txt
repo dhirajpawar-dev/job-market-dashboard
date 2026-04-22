@@ -3,4 +3,5 @@ streamlit
 plotly
 groq
 python-dotenv
+bcrypt
 PyPDF2
