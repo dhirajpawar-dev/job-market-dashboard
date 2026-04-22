@@ -4,10 +4,22 @@ import plotly.express as px
 from groq import Groq
 from dotenv import load_dotenv
 import os
+from auth import init_db, show_auth
 
 load_dotenv()
 
 st.set_page_config(page_title="Job Market Dashboard", layout="wide")
+
+init_db()
+
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+
+if not st.session_state["logged_in"]:
+    show_auth()
+    st.stop()
+
+user_name = st.session_state["user_name"]
 
 @st.cache_data
 def load_data():
@@ -20,10 +32,15 @@ def load_data():
 
 df = load_data()
 
-st.title("AI-Powered Job Market Intelligence Dashboard")
+st.title(f"Welcome, {user_name}! 👋")
 st.markdown("Analyzing **61,953** real job postings for Data Analyst roles")
 
 st.sidebar.header("Filters")
+if st.sidebar.button("Logout"):
+    st.session_state["logged_in"] = False
+    st.session_state["user_name"] = ""
+    st.rerun()
+
 location_filter = st.sidebar.multiselect(
     "Filter by Location",
     options=df["location"].dropna().unique(),
@@ -71,7 +88,6 @@ else:
 
 st.divider()
 
-# Skills Trend
 st.subheader("Top Skills in Demand")
 skills_data = []
 skill_list = ['python', 'sql', 'tableau', 'excel', 'power_bi', 'r', 'spark', 'aws']
@@ -90,7 +106,6 @@ st.plotly_chart(fig4, use_container_width=True)
 
 st.divider()
 
-# Job Match Score
 st.subheader("Job Match Score")
 st.markdown("Enter your skills and see how well you match the job market.")
 user_skills = st.text_input("Enter your skills (comma separated):",
@@ -150,6 +165,68 @@ if user_question:
         answer = response.choices[0].message.content
         st.success("AI Answer:")
         st.write(answer)
+
+st.divider()
+
+st.subheader("Resume Analyzer")
+st.markdown("Upload your resume and get AI-powered feedback based on the job market.")
+
+upload_option = st.radio("Choose input method:",
+    ["Upload File", "Paste Text"], horizontal=True)
+
+resume_text = ""
+
+if upload_option == "Upload File":
+    uploaded_file = st.file_uploader("Upload your resume",
+        type=["txt", "pdf"])
+    if uploaded_file:
+        if uploaded_file.type == "text/plain":
+            resume_text = uploaded_file.read().decode("utf-8")
+        elif uploaded_file.type == "application/pdf":
+            import PyPDF2
+            import io
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.read()))
+            for page in pdf_reader.pages:
+                resume_text += page.extract_text()
+else:
+    resume_text = st.text_area("Paste your resume text here:",
+        placeholder="Paste your resume content here...",
+        height=200)
+
+if resume_text:
+    with st.spinner("Analyzing your resume..."):
+        top_skills = df["description_tokens"].dropna().head(100).tolist()
+        
+        resume_context = f"""
+        You are a career expert. Analyze this resume against the current Data Analyst job market.
+        
+        Job market data:
+        - Most in demand skills: SQL, Python, Tableau, Excel, Power BI
+        - Average salary: $85,000/year
+        - Top hiring locations: Anywhere, United States, New York
+        
+        Resume:
+        {resume_text}
+        
+        Provide:
+        1. Skills found in the resume that match job market demand
+        2. Missing skills the person should learn
+        3. Overall resume score out of 10
+        4. Top 3 specific recommendations to improve
+        Keep it concise and actionable.
+        """
+
+        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": resume_context},
+                {"role": "user", "content": "Analyze my resume"}
+            ]
+        )
+        analysis = response.choices[0].message.content
+        st.success("Resume Analysis:")
+        st.write(analysis)
 
 st.divider()
 
