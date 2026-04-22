@@ -17,7 +17,7 @@ A data analytics web application that analyzes 61,953 real Data Analyst job post
 - **Python** — Core programming language
 - **Pandas** — Data loading, cleaning and analysis
 - **Streamlit** — Web application framework
-- **Plotly** — Interactive data visualizationsgit add README.md
+- **Plotly** — Interactive data visualizations
 - **Groq AI (LLaMA 3.3)** — AI-powered insights and resume analysis
 - **SQLite** — User authentication database
 - **bcrypt** — Password hashing and security
@@ -42,8 +42,10 @@ streamlit run app.py
 
 ## Screenshots
 > Dashboard showing top job titles, locations and salary distribution
+![alt text](image.png)
 
 > Resume Analyzer giving AI feedback on uploaded PDF resume
+![alt text](image-1.png)
 
 ## Author
 **Dhiraj Pawar**
