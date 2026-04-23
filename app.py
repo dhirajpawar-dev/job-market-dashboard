@@ -9,6 +9,13 @@ from auth import init_db, show_auth
 load_dotenv()
 
 st.set_page_config(page_title="Job Market Dashboard", layout="wide")
+st.markdown("""
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+</style>
+""", unsafe_allow_html=True)
 
 init_db()
 
