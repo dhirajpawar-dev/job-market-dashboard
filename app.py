@@ -13,9 +13,9 @@ st.markdown("""
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
-
 init_db()
 
 if "logged_in" not in st.session_state:
@@ -39,15 +39,6 @@ def load_data():
 df = load_data()
 
 st.title(f"Welcome, {user_name}! 👋")
-st.markdown("""
-<style>
-.mobile-hint { display: none; }
-@media (max-width: 768px) { .mobile-hint { display: block; } }
-</style>
-<div class="mobile-hint">
-📱 On mobile? Tap the ≡ menu at top left to navigate between pages.
-</div>
-""", unsafe_allow_html=True)
 st.markdown("Analyzing **61,953** real job postings for Data Analyst roles")
 
 st.sidebar.header("Navigation")
