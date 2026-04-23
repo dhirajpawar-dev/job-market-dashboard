@@ -13,7 +13,6 @@ st.markdown("""
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -40,6 +39,8 @@ def load_data():
 df = load_data()
 
 st.title(f"Welcome, {user_name}! 👋")
+if st.session_state["logged_in"]:
+    st.info("📱 On mobile? Tap the ≡ menu at top left to navigate between pages.")
 st.markdown("Analyzing **61,953** real job postings for Data Analyst roles")
 
 st.sidebar.header("Navigation")
