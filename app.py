@@ -39,8 +39,15 @@ def load_data():
 df = load_data()
 
 st.title(f"Welcome, {user_name}! 👋")
-if st.session_state["logged_in"]:
-    st.info("📱 On mobile? Tap the ≡ menu at top left to navigate between pages.")
+st.markdown("""
+<style>
+.mobile-hint { display: none; }
+@media (max-width: 768px) { .mobile-hint { display: block; } }
+</style>
+<div class="mobile-hint">
+📱 On mobile? Tap the ≡ menu at top left to navigate between pages.
+</div>
+""", unsafe_allow_html=True)
 st.markdown("Analyzing **61,953** real job postings for Data Analyst roles")
 
 st.sidebar.header("Navigation")
