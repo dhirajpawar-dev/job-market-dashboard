@@ -10,7 +10,8 @@ A professional data analytics web application that analyzes 61,953 real Data Ana
 ![Dashboard](dashboard.png)
 
 ### Resume Analyzer
-![Resume Analyzer](resume.png)
+![Resume Analyzer](resume1.png)
+![Resume Analyzer](resume2.png)
 
 ## Features
 - 🔐 **User Authentication** — Secure login and signup system
