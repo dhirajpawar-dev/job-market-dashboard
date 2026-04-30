@@ -80,6 +80,68 @@ streamlit run app.py
 - **Career Counselors** — Data-driven career guidance backed by real job market data
 - **Students** — Plan which skills to learn based on real market demand
 
+## How Insights Are Calculated
+
+All business insights are calculated directly from the 61,953 job postings dataset using Python and Pandas:
+
+**Salary by Skill:**
+- Filter all rows where `description_tokens` contains a specific skill (e.g. "python")
+- Calculate mean of `salary_yearly` for filtered rows
+- Compare against overall mean salary to get percentage difference
+
+**Remote vs Onsite Salary:**
+- Filter rows where `work_from_home == True` → calculate mean salary
+- Filter rows where `work_from_home == False` → calculate mean salary
+- Compare both averages
+
+**Skill Demand Percentage:**
+- Count rows where skill appears in `description_tokens`
+- Divide by total rows (61,953) × 100
+- Example: SQL appears in 72% of all postings
+
+**Job Match Score:**
+- User enters their skills
+- System checks each skill against top 8 market skills
+- Score = (matched skills / total market skills) × 100
+
+## Sample SQL / Pandas Queries Used
+
+```python
+# Top 10 most in-demand job titles
+df['title'].value_counts().head(10)
+
+# Average salary for Python + SQL roles
+df[
+    df['description_tokens'].apply(
+        lambda x: 'python' in str(x).lower() and 'sql' in str(x).lower()
+    ) & df['salary_yearly'].notna()
+]['salary_yearly'].mean()
+
+# Remote vs onsite salary comparison
+remote_avg = df[df['work_from_home'] == True]['salary_yearly'].mean()
+onsite_avg = df[df['work_from_home'] == False]['salary_yearly'].mean()
+
+# Skill demand percentage
+skill_count = df['description_tokens'].apply(
+    lambda x: 'python' in str(x).lower()
+).sum()
+demand_pct = (skill_count / len(df)) * 100
+
+# Top hiring locations
+df['location'].value_counts().head(10)
+
+# Salary distribution by location
+df.groupby('location')['salary_yearly'].mean().sort_values(ascending=False)
+```
+
+## Dataset Limitations
+
+- **US-biased data** — All job postings are from Google Search US results. Salary and skill demand may differ significantly in India, Europe or other regions
+- **Missing salary data** — Only ~15% of job postings include salary information. Salary insights are based on this subset and may not represent the full market
+- **Data freshness** — Dataset was last updated in 2023. Some skill demands and salary figures may have shifted since then
+- **Job title inconsistency** — Same roles appear under different titles (Data Analyst, Business Analyst, Analytics Engineer) which may affect aggregations
+- **Skill detection method** — Skills are detected by keyword matching in job descriptions. This may miss variations (e.g. "MS Excel" vs "Excel") leading to slight undercounting
+
 ## Author
 **Dhiraj Pawar**
 - GitHub: [@dhirajpawar-dev](https://github.com/dhirajpawar-dev)
